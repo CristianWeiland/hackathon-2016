@@ -1,7 +1,9 @@
 INSERT INTO
     produto
+    (nome
+    , unidade
+    , unidade_sigla)
 VALUES
-    $nome
-    , $unidade
-    , $unidade_sigla
-    , $quantidade_por_unidade;
+    ($1
+    , $2
+    , $3);

@@ -1,0 +1,5 @@
+insert into registros (id_produto, id_local, preco, data, quantidade_por_unidade) values (1, 1, 15.00, '05/07/2015'::date, 1000.0);
+
+insert into local (nome, bairro, logradouro, numero, latitude, longitude) values ('Mercado do John', 'Centro', 'Rua Saldanha Marinho', '150', 10.230, 20.230);
+
+insert into produto (nome, unidade, unidade_sigla) values ('Feijao', 'Grama', 'GR');

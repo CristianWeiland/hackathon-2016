@@ -1,7 +1,6 @@
-CREATE TABLE produto {
+CREATE TABLE produto (
     id SERIAL PRIMARY KEY
     , nome TEXT NOT NULL
-    , unidade TEXT NOT NULL // grama, kilograma
-    , unidade_sigla TEXT NOT NULL // gr, kg
-    , quantidade_por_unidade DOUBLE PRECISION NOT NULL // 1000 / grama
-};
+    , unidade TEXT NOT NULL
+    , unidade_sigla TEXT NOT NULL
+);

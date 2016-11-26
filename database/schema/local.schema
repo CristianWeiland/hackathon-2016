@@ -1,4 +1,4 @@
-CREATE TABLE local {
+CREATE TABLE local (
     id SERIAL PRIMARY KEY
     , nome TEXT NOT NULL
     , bairro TEXT NOT NULL
@@ -8,4 +8,4 @@ CREATE TABLE local {
     , cep TEXT
     , latitude DOUBLE PRECISION NOT NULL
     , longitude DOUBLE PRECISION NOT NULL
-};
+);

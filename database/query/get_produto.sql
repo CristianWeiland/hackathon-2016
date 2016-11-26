@@ -1,6 +1,7 @@
 SELECT
     r.preco
     , r.data
+    , r.quantidade_por_unidade
     , l.nome
     , l.bairro
     , l.logradouro
@@ -11,9 +12,9 @@ SELECT
     , l.longitude
 FROM
     produto p
-INNER JOIN registros r ON p.id = r.id_produto
-INNER JOIN local l ON r.id_local = l.id
+    INNER JOIN registros r ON p.id = r.id_produto
+    INNER JOIN local l ON r.id_local = l.id
 WHERE
     name = $1
 ORDER BY
-    r.preco DESC;
+    r.preco ASC;

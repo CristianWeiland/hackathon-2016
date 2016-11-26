@@ -1,7 +1,8 @@
-CREATE TABLE registros {
+CREATE TABLE registros (
     id SERIAL
     , id_produto INTEGER NOT NULL references produto
     , id_local INTEGER NOT NULL references local
-    , preco DOUBLE PRECISION NOT NULL // Obs se custo = R$2,00 / 100g, preco = 2.00
+    , preco DOUBLE PRECISION NOT NULL
     , data DATE NOT NULL
-};
+    , quantidade_por_unidade DOUBLE PRECISION NOT NULL
+);

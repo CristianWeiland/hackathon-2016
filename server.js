@@ -6,7 +6,8 @@ var serveStatic = require('serve-static');
 var config = require('./config.js');
 var bodyParser = require('body-parser');
 var app = express();
-
+var passport = require('passport');
+var LocalStrategy = require('passport-local').Strategy;
 var isLogged = require('connect-ensure-login').ensureLoggedIn();
 
 app.use(express.static(__dirname + '/public'));
@@ -30,15 +31,17 @@ app.listen(port, function() {
     console.log('Server listening on port ' + port + '.');
 });
 
-var news = require('./routes/news.js')();
-var users = require('./routes/users.js')();
-var item = require('./routes/item.js')();
-// var news = require('./routes/news.js')(params);
+var local = require('./routes/local.js')();
+var produto = require('./routes/produto.js')();
+var registro = require('./routes/registro.js')();
 
+app.get('/local', local.get);
+app.post('/local', local.post);
 
-app.post('/item', item.post);
+app.get('/produto', produto.get);
+app.post('/produto', produto.post);
 
-
+app.post('/registro', registro.post);
 
 app.post('/login', passport.authenticate('local', { failureRedirect: '/login' }),
   function(req, res) {
