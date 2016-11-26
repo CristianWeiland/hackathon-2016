@@ -1,0 +1,11 @@
+CREATE TABLE local {
+    id SERIAL PRIMARY KEY
+    , nome TEXT NOT NULL
+    , bairro TEXT NOT NULL
+    , logradouro TEXT NOT NULL
+    , numero INTEGER NOT NULL
+    , complemento TEXT
+    , cep TEXT
+    , latitude DOUBLE PRECISION NOT NULL
+    , longitude DOUBLE PRECISION NOT NULL
+};
