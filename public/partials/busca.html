@@ -1,0 +1,31 @@
+<div class="search row">
+	<div class="small-10 columns">
+		<input type="text" placeholder="Pesquise seu produto..." ng-model="searchKey"/>
+	</div>
+	<div class="small-2 columns">
+		<button type="button" class="button" ng-click="searchProducts(searchKey)">Buscar</button>
+	</div>
+</div>
+
+<div class="content">
+	<h2> Produtos </h2>
+	<table>
+	    <thead>
+		    <tr>
+		        <th width="200">Nome do Produto</th>
+		        <th width="150">Menor Preço</th>
+		    </tr>
+	    </thead>
+	    <tbody>
+	  	    <tr ng-repeat="prod in produtos track by $index" ng-click="choseProduct($index)">
+	        	<td>
+	        		<div class="clickable"> {{ prod.nome }} </div>
+	        	</td>
+	        	<!-- Produto.registro é um array que deve estar ordenado por preço em ordem ascendente. -->
+	            <td>
+	            	<div class="clickable"> R$ {{ prod.registros[0].preco }} </div>
+	            </td>
+	    	</tr>
+	    </tbody>
+	</table>
+</div>

@@ -6,39 +6,59 @@ var serveStatic = require('serve-static');
 var config = require('./config.js');
 var bodyParser = require('body-parser');
 var app = express();
-
+var passport = require('passport');
 var isLogged = require('connect-ensure-login').ensureLoggedIn();
 
 app.use(express.static(__dirname + '/public'));
 app.use(express.static(__dirname + '/bower_components'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
-//app.use(db.establish(config.db_config));
-
-passport.use(new LocalStrategy(
-  function(username, password, done) {
-    User.findOne({ username: username }, function (err, user) {
-      if (err) { return done(err); }
-      if (!user) { return done(null, false); }
-      if (!user.verifyPassword(password)) { return done(null, false); }
-      return done(null, user);
-    });
-  }
-));
 
 app.listen(port, function() {
     console.log('Server listening on port ' + port + '.');
 });
 
-var news = require('./routes/news.js')();
-var users = require('./routes/users.js')();
-var item = require('./routes/item.js')();
-// var news = require('./routes/news.js')(params);
+app.get('/product', function(req, res) {
+	console.log(req);
+	res.json({
+	    arr: [
+	        {
+	            nome: 'Feijão 1'
+	            , id_produto: 1
+	            , registros: [
+	                {
+	                    estabelecimento: 'Mercado Tio Juca'
+	                    , preco: 6.99
+	                    , logradouro: 'Rua Emilio de Menezes'
+	                    , numero: '232'
+	                    , distancia: '10'
+	                }, {
+	                    estabelecimento: 'Bar no Trabalho'
+	                    , preco: 7.99
+	                    , logradouro: 'Rua Carlos Cavalcanti'
+	                    , numero: '999'
+	                    , distancia: '3.7'
+	                }
+	            ]
+	        }, {
+	            nome: 'Feijão Marca 2'
+	            , id_produto: 2
+	            , registros: [
+	                {
+	                    mercado: 'Oi'
+	                    , preco: 7.25
+	                }, {
+	                    mercado: 'Mercado da Tia Dona'
+	                    , preco: 8.50
+	                }
+	            ]
+	        }
+	]});
+});
 
-
-app.post('/item', item.post);
-
-
+app.get('/kaio', function(req, res) {
+	console.log(req);
+})
 
 app.post('/login', passport.authenticate('local', { failureRedirect: '/login' }),
   function(req, res) {

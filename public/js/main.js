@@ -1,41 +1,16 @@
-angular.module('seek', ['ngResource', 'ui.router'
-                       ,'ui.bootstrap']) // About using multiple js files, look for angular multiple modules, angular multiple module in different files
+angular.module('hackathon', ['ngResource', 'ui.router' ]) // About using multiple js files, look for angular multiple modules, angular multiple module in different files
                                                     // and js importing files.
-    .config(function($stateProvider, $urlRouterProvider) {
-        $stateProvider
-            .state('home', {
-                url: '/home',
-                templateUrl: '../partials/home.html'
-            })
-            .state('about', {
-                url: '/about',
-                templateUrl: '../partials/about.html'
-            })
-            .state('contact', {
-                url: '/contact',
-                templateUrl: '../partials/contact.html'
-            })
-            .state('shop', {
-                url: '/shop',
-                templateUrl: '../partials/shop.html'
-            })
-            .state('login', {
-                url: '/login',
-                templateUrl: '../partials/login.html'
-            })
-        $urlRouterProvider.otherwise("/home");
-    })
-
-    .factory('UsersFactory', function ($http, $state) {
+    .factory('ProductsFactory', function ($http, $state) {
         return {
-            post: function (successCallback, errorCallback) {
+            get: function (successCallback, errorCallback) {
 
-                var params = $state.params.login;
+                var params = $state.params.searchKey;
 
-                // console.log(params);
+                console.log(params);
+                console.log('oi ' + $state.params.searchKey);
 
-                $http({ url: '/api/users',
-                        method: 'POST',
+                $http({ url: '/product',
+                        method: 'GET',
                         data: { 'data': params }
                     })
                     .success(function (data) {
@@ -52,24 +27,27 @@ angular.module('seek', ['ngResource', 'ui.router'
         }
     })
 
-    .directive('new', function ($compile) {
-        return {
-            restrict: 'E',
-            scope : {
-                param : '=attrs'
-                , size : '=size'
-            },
-            link: function (scope, element, attr, ctrl) {
-            }
+    .controller('MainCtrl', function($scope, $state, $location, $timeout, ProductsFactory) {
+        $scope.partial = "partials/home.html"
+
+        $scope.searchProducts = function(key) {
+            $state.params.searchKey = key;
+            console.log(key);
+            // console.log('Should be searching with key: ' + $scope.searchKey);
+
+            ProductsFactory.get(function(data) {
+                // Se retornou só um produto, o usuário não precisa
+                // marcar qual marca quer. Pula para a próxima tela.
+                $scope.produtos = data.arr;
+
+                console.log('Success receiving data!');
+            }, function() {
+                console.log('Error getting products from ProductsFactory.');
+            });
         }
-    })
 
-    .controller('LoginCtrl',function($scope, $state, $uibModal, NewsFactory, UsersFactory) {
-    })
-
-    /* Controller que gerencia a página de notícias. */
-    .controller('HomeCtrl',function($scope) {
-    })
-
-    .controller('MainCtrl', function($scope, $location, $timeout) {
+        $scope.choseProduct = function(index) {
+            $scope.produto = $scope.produtos[index];
+            $scope.partial = 'partials/produto.html';
+        }
     })

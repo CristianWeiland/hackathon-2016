@@ -1,28 +1,52 @@
 <!DOCTYPE html>
-<html lang="en" ng-app="seek">
+<html lang="en" ng-app="hackathon">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <!-- Falta colocar uma logo bonitinha aqui. -->
-    <link rel="icon" href="images/icon.png">
     <base href="/">
-    <title>Seek 7</title>
-    <link rel="stylesheet" href="components/bootstrap/bootstrap.min.css">
+    <title>Mercado Fácil</title>
+
+    <link rel="stylesheet" href="components/foundation/css/foundation.css">
     <link rel="stylesheet" href="css/main.css">
+
+    <link href="https://fonts.googleapis.com/css?family=Lato" rel="stylesheet">
+
 </head>
 <body ng-controller="MainCtrl">
-    <footer class="footer">
-        <div align="center">
+
+    <div class="top-bar">
+        <div class="top-bar-left">
+            <ul class="dropdown menu" data-dropdown-menu>
+                <li class="menu-text clickable" ng-click="partial = 'partials/home.html'">
+                    <img src="../images/facebook.png" height="50" width="50">Mercado Fácil</img>
+                </li>
+                <li class="clickable" ng-click="partial = 'partials/busca.html'">Produtos</li>
+            </ul>
         </div>
+        <div class="top-bar-right">
+            <button type="button" class="button" ng-click="partial = 'partials/login.html'"">Login</button>
+        </div>
+    </div>
+
+    <div class="container">
+        <div ng-include="partial"/>
+    </div>
+
+    <footer class="footer">
+        <div align="center"></div>
     </footer>
 
-    <script src="components/jquery/jquery.js"></script>
+    <script src="components/jquery/jquery.min.js"></script>
     <script src="components/angular/angular.js"></script>
     <script src="components/angular-ui-router/angular-ui-router.min.js"></script>
-    <script src="components/angular-resource/angular-resource.js"></script>
-    <script src="components/angular-bootstrap/ui-bootstrap.js"></script>
-    <script src="components/angular-bootstrap/ui-bootstrap-tpls.js"></script>
-    <script src="components/bootstrap/bootstrap.min.js"></script>
+    <script src="components/angular-resource/angular-resource.min.js"></script>
+
+    <script src="components/foundation/js/vendor/foundation.js"></script>
+    <script src="components/foundation/js/vendor/what-input.js"></script>
+
     <script src="js/main.js"></script>
+    <script> $(document).foundation(); </script>
+
 </body>
 </html>
+
