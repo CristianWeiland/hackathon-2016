@@ -2,6 +2,7 @@
 
 var csv = require('csv');
 var fs = require('fs');
+var pg = require('pg');
 
 var publicConfig = {
   key: 'AIzaSyAU_020_jWnao1rTyQ8jdhL_17kkZblF1Y',
@@ -22,9 +23,41 @@ var parser = csv.parse({
 });
 var stringfier = csv.stringify();
 
-var readStream = fs.createReadStream('registers.csv',{ encoding : 'utf-8'}).pipe(parser);
-
+ /* Conexão com o DB */
+var client = new pg.Client('postgres://hackathon:123mudar@localhost:5432/hackathon');
+var products = {};
+var locais = {};
 var parsed = {};
+client.connect(function (err) {
+    if (err) throw err;
+
+    // Execute a query on our database
+    client.query('SELECT id, nome from produto;',[] , function (err, result) {
+        if (err) throw err;
+
+        result.rows.forEach(function(item){
+            products[item.nome] = item.id;
+        });
+
+        client.query('SELECT id, nome from local;', [], function (err, result) {
+            if (err) throw err;
+
+            // Disconnect the client
+            client.end(function (err) {
+                if (err) throw err;
+            });
+
+            result.rows.forEach(function(item){
+                locais[item.nome] = item.id;
+            });
+
+            var readStream = fs.createReadStream('registers.csv',{ encoding : 'utf-8'}).pipe(parser);
+        });
+    });
+});
+
+
+
 
 function extract (obj) {
 
@@ -40,16 +73,13 @@ function extract (obj) {
     return prod;*/
 
     var prod = {
-     nome : obj['ESTABELECIMENTO_REDE']
-     , bairro : obj['DESCRICAO_BAIRRO']
-     , logradouro : obj['ENDERECO_ESTABELECIMENTO']
-     , numero : obj['NUMERO_ENDERECO_ESTABELECIMENTO'].toString()
-     , complemento : obj['COMPLEMENTO_ENDERECO_ESTABELECIMEN-TO']
-     , latitude : 0.0
-     , longitude : 0.0
+     local : obj['ENDERECO_ESTABELECIMENTO']
+     , data : obj['DATA_PESQUISA']
+     , preco : obj['PRECO_PESQUISADO']
+     , produto : obj['PRODUTO_DESCRICAO']
     };
-
-    prod.numero = prod.numero.replace(/\./g, '');
+    prod.id_produto = products[prod.produto];
+    prod.id_local = products[prod.local];
 
     return prod;
 
@@ -58,20 +88,21 @@ function extract (obj) {
 parser.on('readable', function() {
     var prod, aux;
     while(data = parser.read()) {
-        prod = parsed[data['ENDERECO_ESTABELESCINTO'] + ' ' + data['NUMERO_ENDERECO_ESTABELESCIMENTO']];
+        prod = parsed[data['ENDERECO_ESTABELECIMENTO'] + ' ' + data['PRODUTO_DESCRICAO']];
         if( prod == undefined) {
             prod = extract(data);
             //console.log('INSERT INTO produto (nome, unidade, unidade_sigla)' +
             //' VALUES ("' + prod.nome + '", "' + prod.unidade + '", "' + prod.unidade_sigla + '");');
-            parsed[prod.logradouro + ' ' + prod.numero] = prod;
+            parsed[prod.local + ' ' + prod.produto] = prod;
         }
         else {
            aux = extract(data);
-            if(prod.unidade !== aux.unidade) {
-                console.log('FUCK1 ' + prod.nome + ' ' + prod.unidade + ' ' + aux.unidade);
-            }
-            if(prod.unidade_sigla !== aux.unidade_sigla) {
-                console.log('FUCK2 ' + prod.nome + ' ' + prod.unidade_sigla + ' ' + aux.unidade_sigla);
+           var split1 = prod.data.split('/');
+           var split2 = aux.data.split('/');
+           var date1 = new Date(split1[2], split1[1], split1[0]);
+           var date2 = new Date(split2[2], split2[1], split2[0]);
+            if(date1.valueOf() < date2.valueOf()) {
+               parsed[data['ENDERECO_ESTABELECIMENTO'] + ' ' + data['PRODUTO_DESCRICAO']] = aux;
             }
         }
     }
@@ -88,25 +119,13 @@ parser.on('finish', function (){
         array_parsed.push(parsed[key])
     }
 
+
     array_parsed.forEach(function(item){
-        var geocodeParams = {
-          "address":    item.logradouro + ' '  + item.numero + ' CURITIBA`',
-          "components": "components=country:BR",
-          "language":   "pt-br",
-          "region":     "br"
-        };
-        gmAPI.geocode(geocodeParams, function(err, result){
-              item.latitude = result.results[0].geometry.location.lat;
-              item.longitude = result.results[0].geometry.location.lng;
-
-              var params = [item.nome, item.bairro, item.logradouro, item.numero,
-                item.complemento, item.latitude, item.longitude];
-
-            var str = ('INSERT INTO local (nome, bairro, logradouro, numero,' +
-            ' complemento, latitude, longitude)' + ' VALUES (\'' +
-              params.join('\', \'') + '\');');
-            console.log(str.replace(/""/g, 'NULL'));
-        });
+        var params = [item.id_produto, item.id_local, item.preco, item.data];
+        var str = ('INSERT INTO registro (id_produto, id_local, preco, data' +
+        ') VALUES (\'' +
+          params.join('\', \'') + '\');');
+        console.log(str);
     });
 });
 
